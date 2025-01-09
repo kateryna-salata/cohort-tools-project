@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const PORT = 5005;
+const cors = require("cors");
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
@@ -16,11 +17,21 @@ const app = express();
 // MIDDLEWARE
 // Research Team - Set up CORS middleware here:
 // ...
+app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// CORS OPTIONS - Configure CORS for specific origins, methods, and headers
+const corsOptions = {
+  origin: "*", // Only allow requests from "http://example.com"
+  methods: "GET,POST,PUT,DELETE", // Allow only GET and POST HTTP methods
+  allowedHeaders: "Content-Type,Authorization,Custom-Header", // Specify which headers can be sent
+};
+
+app.use(cors(corsOptions));
 
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:
