@@ -2,21 +2,19 @@ const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const PORT = 5005;
+const mongoose = require("mongoose");
 const cors = require("cors");
+const PORT = 5005;
 
-// STATIC DATA
-// Devs Team - Import the provided files with JSON data of students and cohorts here:
-// ...
-const cohorts = require("./cohorts.json");
-const students = require("./students.json");
+// Models
+const Cohort = require("./models/Cohort");
+const Student = require("./models/Student");
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
 
 // MIDDLEWARE
 // Research Team - Set up CORS middleware here:
-// ...
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
@@ -26,26 +24,49 @@ app.use(cookieParser());
 
 // CORS OPTIONS - Configure CORS for specific origins, methods, and headers
 const corsOptions = {
-  origin: "*", // Only allow requests from "http://example.com"
-  methods: "GET,POST,PUT,DELETE", // Allow only GET and POST HTTP methods
-  allowedHeaders: "Content-Type,Authorization,Custom-Header", // Specify which headers can be sent
+  origin: "*",
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization,Custom-Header",
 };
-
 app.use(cors(corsOptions));
 
+// Mongoose Connection to MongoDB
+// MongoDB URI for your MongoDB Atlas Cluster
+const MONGO_URI =
+  "mongodb+srv://joshua:znMH6MIKIDwZOLMx@cluster0.8l6cx.mongodb.net/";
+mongoose
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
+
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
-// Devs Team - Start working on the routes here:
-// ...
-app.get("/docs", (req, res) => {
-  res.sendFile(__dirname + "/views/docs.html");
+
+// COHORT ROUTES
+
+app.get("/api/cohorts", async (req, res) => {
+  try {
+    const cohorts = await Cohort.find();
+    res.json(cohorts);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch cohorts" });
+  }
 });
 
-app.get("/api/cohorts", (req, res) => {
-  res.json(cohorts);
-});
-
-app.get("/api/students", (req, res) => {
-  res.json(students);
+// STUDENT ROUTES
+app.get("/api/students", async (req, res) => {
+  try {
+    const students = await Student.find();
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch students" });
+  }
 });
 
 // START SERVER
