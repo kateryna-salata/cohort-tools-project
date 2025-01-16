@@ -4,7 +4,11 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const PORT = 5005;
+require("dotenv").config();
+const PORT = process.env.PORT || 5005;
+
+// console.log JWT_SECRET para ver si cargó bien
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 // Models
 const Cohort = require("./models/Cohort");

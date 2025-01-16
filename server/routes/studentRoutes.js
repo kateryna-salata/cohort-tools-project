@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Student = require("../models/Student");
 const Cohort = require("../models/Cohort"); // To handle cohort-specific actions
+const authMiddleware = require("../middleware/auth");
 
 // // Student Routes
 
