@@ -10,6 +10,12 @@ const PORT = 5005;
 const Cohort = require("./models/Cohort");
 const Student = require("./models/Student");
 
+// Authentication Routes
+const authRoutes = require("./routes/auth.routes");
+
+// User Routes (for protected routes)
+const userRoutes = require("./routes/user.routes");
+
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
 
@@ -31,7 +37,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Mongoose Connection to MongoDB
-// MongoDB URI for your MongoDB Atlas Cluster
+// MongoDB URI for your MongoDB Atlas Cluster (JOSHUA's :) )
 const MONGO_URI =
   "mongodb+srv://joshua:znMH6MIKIDwZOLMx@cluster0.8l6cx.mongodb.net/";
 mongoose
@@ -59,6 +65,9 @@ app.get("/api/cohorts", async (req, res) => {
   }
 });
 
+const cohortRoutes = require("./routes/cohortRoutes");
+app.use("/api/cohort", cohortRoutes);
+
 // STUDENT ROUTES
 app.get("/api/students", async (req, res) => {
   try {
@@ -68,6 +77,15 @@ app.get("/api/students", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch students" });
   }
 });
+
+const studentRoutes = require("./routes/studentRoutes");
+app.use("/api/students", studentRoutes);
+
+// AUTH ROUTES (authentication routes)
+app.use("/auth", authRoutes);
+
+// USER ROUTES (protected route for specific user)
+app.use("/api/users", userRoutes);
 
 // START SERVER
 app.listen(PORT, () => {

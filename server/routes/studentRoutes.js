@@ -50,7 +50,7 @@ router.get("/:studentId", async (req, res) => {
 });
 
 // PUT /api/students/:studentId - Updates a specific student by id
-router.put("/:studentId", async (req, res) => {
+router.put("/:studentId", authMiddleware, async (req, res) => {
   try {
     const updatedStudent = await Student.findByIdAndUpdate(
       req.params.studentId,
@@ -66,7 +66,7 @@ router.put("/:studentId", async (req, res) => {
 });
 
 // DELETE /api/students/:studentId - Deletes a specific student by id
-router.delete("/:studentId", async (req, res) => {
+router.delete("/:studentId", authMiddleware, async (req, res) => {
   try {
     const deletedStudent = await Student.findByIdAndDelete(
       req.params.studentId
