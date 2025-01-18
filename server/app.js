@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config(); // Load environment variables
 
-const PORT = process.env.PORT || 5006;
+const PORT = process.env.PORT || 5005;
 
 // Check for required environment variables
 if (!process.env.JWT_SECRET) {
@@ -40,7 +40,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static("public")); // Serve static files
 
-const MONGO_URI = "mongodb+srv://joshua:znMH6MIKIDwZOLMx@cluster0.8l6cx.mongodb.net/cohortTools?retryWrites=true&w=majority";
+const MONGO_URI =
+  "mongodb+srv://joshua:znMH6MIKIDwZOLMx@cluster0.8l6cx.mongodb.net/cohortTools?retryWrites=true&w=majority";
 
 mongoose
   .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -49,7 +50,6 @@ mongoose
     console.error("MongoDB connection error:", err.message);
     process.exit(1); // Exit the process on a critical connection error
   });
-
 
 // Routes
 app.use("/auth", authRoutes); // Authentication routes
@@ -63,7 +63,9 @@ app.post("/auth/signup", async (req, res) => {
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User with this email already exists" });
+      return res
+        .status(400)
+        .json({ message: "User with this email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
