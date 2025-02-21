@@ -5,7 +5,6 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-// Middleware for token verification
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -23,8 +22,8 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach decoded data to request
-    next(); // Proceed to the next middleware/route handler
+    req.user = decoded;
+    next();
   } catch (err) {
     console.error("Token verification error:", err.message);
 
@@ -72,7 +71,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// POST /auth/login - Authenticate user and return a JWT
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -110,7 +108,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// GET /auth/verify - Verify the JWT token
 router.get("/verify", authMiddleware, (req, res) => {
   try {
     res.json({
