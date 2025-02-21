@@ -2,27 +2,27 @@ const express = require("express");
 const router = express.Router();
 const Cohort = require("../models/Cohort.js");
 
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
   try {
     const newCohort = new Cohort(req.body);
     const savedCohort = await newCohort.save();
 
     res.status(201).json(savedCohort);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const cohorts = await Cohort.find();
     res.status(200).json(cohorts);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.get("/:cohortId", async (req, res) => {
+router.get("/:cohortId", async (req, res, next) => {
   try {
     const cohort = await Cohort.findById(req.params.cohortId);
     if (!cohort)
@@ -30,11 +30,11 @@ router.get("/:cohortId", async (req, res) => {
     
     res.json(cohort);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-router.put("/:cohortId", async (req, res) => {
+router.put("/:cohortId", async (req, res, next) => {
   try {
     const updatedCohort = await Cohort.findOneAndUpdate(
       { cohortId: req.params._id },
@@ -47,11 +47,11 @@ router.put("/:cohortId", async (req, res) => {
     
     res.json(updatedCohort);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err);
   }
 });
 
-router.delete("/:cohortId", async (req, res) => {
+router.delete("/:cohortId", async (req, res, next) => {
   try {
     const deletedCohort = await Cohort.findOneAndDelete(
       { cohortId: req.params._id }
@@ -62,7 +62,7 @@ router.delete("/:cohortId", async (req, res) => {
     
     res.json(deletedCohort);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

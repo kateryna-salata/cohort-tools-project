@@ -6,7 +6,7 @@ const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", async (req, res, next) => {
   try {
     const { email, password, name } = req.body;
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -20,11 +20,11 @@ router.post("/signup", async (req, res) => {
     await newUser.save();
     res.status(201).json({ message: "User created successfully!" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -46,7 +46,7 @@ router.post("/login", async (req, res) => {
 
     res.json({ message: "Login successful", token });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 

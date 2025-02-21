@@ -129,6 +129,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal Server Error" });
 });
 
+const {
+  errorHandler,
+  notFoundHandler,
+} = require("./error-handling/errorHandler.js");
+
+app.use(notFoundHandler);
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
