@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User.js");
+const path = require("path");
+
+const docs = path.join(__dirname, "../views/docs.html")
 
 router.get("/", async (req, res, next) => {
   try {
-    const users = await User.find();
-    res.json(users);
+    res.sendFile(docs);
   } catch (error) {
-    next(err);
+    next();
   }
 });
 

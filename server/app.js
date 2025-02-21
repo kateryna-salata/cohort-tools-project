@@ -3,11 +3,11 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config(); // Load environment variables
+
+require("dotenv").config();
 
 const PORT = process.env.PORT || 5005;
 
-// Check for required environment variables
 if (!process.env.JWT_SECRET) {
   console.error("Error: JWT_SECRET is not defined in .env");
   process.exit(1);
@@ -16,20 +16,20 @@ if (!process.env.JWT_SECRET) {
 // Models
 const Cohort = require("./models/Cohort");
 const Student = require("./models/Student");
-const User = require("./models/User"); // Add the User model
+const User = require("./models/User");
 
-// Import routes
+// Routes
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
-const cohortRoutes = require("./routes/cohortRoutes");
-const studentRoutes = require("./routes/studentRoutes");
+const cohortRoutes = require("./routes/cohort.routes");
+const studentRoutes = require("./routes/student.routes");
+const docsRoutes = require("./routes/docs.routes");
 
-// Initialize Express App
 const app = express();
 
 // Middleware
 const corsOptions = {
-  origin: "*", // Allow all origins (update for production)
+  origin: "*",
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type,Authorization",
 };
@@ -38,26 +38,25 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static("public")); // Serve static files
+app.use(express.static("public"));
+app.use(express.static("views"));
 
-const MONGO_URI =
-  "mongodb+srv://joshua:znMH6MIKIDwZOLMx@cluster0.8l6cx.mongodb.net/cohortTools?retryWrites=true&w=majority";
-
+const MONGO_URI = "mongodb://localhost:27017/cohortTools?retryWrites=true&w=majority";
 mongoose
   .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => {
     console.error("MongoDB connection error:", err.message);
-    process.exit(1); // Exit the process on a critical connection error
+    process.exit(1);
   });
 
 // Routes
-app.use("/auth", authRoutes); // Authentication routes
-app.use("/api/users", userRoutes); // User routes
-app.use("/api/cohorts", cohortRoutes); // Cohort routes
-app.use("/api/students", studentRoutes); // Student routes
+app.use("/auth", authRoutes);
+app.use("/docs", docsRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/cohorts", cohortRoutes);
+app.use("/api/students", studentRoutes);
 
-// Handle storing user credentials in database
 app.post("/auth/signup", async (req, res) => {
   const { email, password, name } = req.body;
   try {
@@ -84,7 +83,6 @@ app.post("/auth/signup", async (req, res) => {
   }
 });
 
-// Handle user login and token generation
 app.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -111,7 +109,6 @@ app.post("/auth/login", async (req, res) => {
   }
 });
 
-// Verify JWT token
 app.get("/auth/verify", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
@@ -127,13 +124,19 @@ app.get("/auth/verify", (req, res) => {
   }
 });
 
-// Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack); // Log error stack
-  res.status(500).json({ error: "Internal Server Error" }); // Generic error response
+  console.error(err.stack);
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
-// Start Server
+const {
+  errorHandler,
+  notFoundHandler,
+} = require("./error-handling/errorHandler.js");
+
+app.use(notFoundHandler);
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
